@@ -6,8 +6,8 @@ export async function verifyOTP(otp: string) {
 
   // For demo purposes, consider "214429" as the correct OTP
   return {
-    success: otp === "214429",
-    message: otp === "214429" ? "Verification successful" : "Invalid OTP",
+    success: otp === "22222",
+    message: otp === "22222" ? "Verification successful" : "Invalid OTP",
   }
 }
 
