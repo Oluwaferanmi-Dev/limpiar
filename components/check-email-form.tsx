@@ -29,7 +29,7 @@ export function CheckEmailForm() {
         </Link>
       </div>
       <div className="text-center">
-        <Link href="/sign-up" className="text-sm text-muted-foreground hover:text-foreground">
+        <Link href="log-in" className="text-sm text-muted-foreground hover:text-foreground">
           Go to sign in
         </Link>
       </div>

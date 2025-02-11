@@ -7,12 +7,14 @@ import {
   Warehouse,
   Hotel,
   Stethoscope,
-  BuildingIcon as Buildings,
+  Building,
   GraduationCap,
   Train,
+  Wheat,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import React from "react" // Import React
+import { ProgressSteps } from "@/components/progress-steps"
+import React from "react"
 
 const categories = [
   {
@@ -23,7 +25,7 @@ const categories = [
   },
   {
     id: "mixed-use",
-    icon: Buildings,
+    icon: Building,
     title: "Mixed-Use",
     description: "Multi-Purpose Developments",
   },
@@ -69,6 +71,12 @@ const categories = [
     title: "Healthcare",
     description: "Medical & Wellness",
   },
+  {
+    id: "agricultural",
+    icon: Wheat,
+    title: "Agricultural & Specialized Commercial",
+    description: "Corporate & Administrative",
+  },
 ]
 
 export default function AddPropertyPage() {
@@ -88,7 +96,7 @@ export default function AddPropertyPage() {
         <div className="flex items-center gap-2">
           <Button variant="outline">Save & Exit</Button>
           <Button
-            onClick={() => selectedCategory && router.push(`/dashboard/add-property/${selectedCategory}/type`)}
+            onClick={() => selectedCategory && router.push(`/dashboard/add-property/${selectedCategory}/title`)}
             disabled={!selectedCategory}
           >
             Next
@@ -97,12 +105,12 @@ export default function AddPropertyPage() {
       </div>
 
       <div className="max-w-5xl mx-auto p-6">
-        <div className="space-y-1">
+        <div className="space-y-1 mb-8">
           <h1 className="text-2xl font-semibold">Select your property category</h1>
           <p className="text-muted-foreground">Basic info like property category and sub-category.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           {categories.map((category) => (
             <button
               key={category.id}
@@ -119,6 +127,8 @@ export default function AddPropertyPage() {
             </button>
           ))}
         </div>
+
+        <ProgressSteps currentStep={1} />
       </div>
     </div>
   )

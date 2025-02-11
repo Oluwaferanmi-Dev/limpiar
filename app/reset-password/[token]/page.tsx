@@ -1,11 +1,11 @@
 import Image from "next/image"
 import { ResetPasswordForm } from "@/components/reset-password-form"
 
-export default function ResetPasswordPage({
-  params,
-}: {
+interface PageProps {
   params: { token: string }
-}) {
+}
+
+export default function ResetPasswordPage({ params }: PageProps) {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-[400px] mx-auto space-y-8">
@@ -15,6 +15,5 @@ export default function ResetPasswordPage({
         <ResetPasswordForm token={params.token} />
       </div>
     </main>
-  )
+  );
 }
-
