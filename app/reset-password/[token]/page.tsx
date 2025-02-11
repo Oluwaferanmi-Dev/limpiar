@@ -1,8 +1,8 @@
-import Image from "next/image"
-import { ResetPasswordForm } from "@/components/reset-password-form"
+import Image from "next/image";
+import { ResetPasswordForm } from "@/components/reset-password-form";
 
 interface PageProps {
-  params: { token: string }
+  params: { token: string }; // Ensure this is a plain object, not a Promise
 }
 
 export default function ResetPasswordPage({ params }: PageProps) {
