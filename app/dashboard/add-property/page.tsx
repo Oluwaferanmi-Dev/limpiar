@@ -13,7 +13,6 @@ import {
   Wheat,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { ProgressSteps } from "@/components/progress-steps"
 import React from "react"
 
 const categories = [
@@ -96,7 +95,7 @@ export default function AddPropertyPage() {
         <div className="flex items-center gap-2">
           <Button variant="outline">Save & Exit</Button>
           <Button
-            onClick={() => selectedCategory && router.push(`/dashboard/add-property/${selectedCategory}/title`)}
+            onClick={() => selectedCategory && router.push(`/dashboard/add-property/${selectedCategory}`)}
             disabled={!selectedCategory}
           >
             Next
@@ -128,7 +127,22 @@ export default function AddPropertyPage() {
           ))}
         </div>
 
-        <ProgressSteps currentStep={1} />
+        {/* Progress Steps */}
+        <div className="mb-12">
+          <div className="flex items-center">
+            {[1, 2, 3, 4, 5].map((step, index) => (
+              <React.Fragment key={step}>
+                <div className="flex items-center">
+                  <div className="text-sm text-muted-foreground">
+                    {step}. {["Category", "Title", "Units", "Location", "Image"][index]}
+                  </div>
+                </div>
+                {index < 4 && <div className="flex-1 h-[1px] bg-border mx-2" />}
+              </React.Fragment>
+            ))}
+          </div>
+          <div className="mt-2 h-1 bg-[#0082ed] w-[20%]" />
+        </div>
       </div>
     </div>
   )
