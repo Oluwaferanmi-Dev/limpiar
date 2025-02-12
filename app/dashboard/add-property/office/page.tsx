@@ -1,50 +1,58 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+import * as React from "react"
 import { Button } from "@/components/ui/button"
-import React from "react"
+import { Input } from "@/components/ui/input"
+import { Minus, Plus } from "lucide-react"
+import { usePropertyStore } from "@/store/property-store"
 
-const officeTypes = [
-  {
-    id: "corporate-headquarters",
-    title: "Corporate Headquarters",
-    description: "Large office building / Single company's HQ",
-  },
-  {
-    id: "skyscrapers",
-    title: "Skyscrapers / High-Rise Offices",
-    description: "Multi-floor buildings with different businesses",
-  },
-  {
-    id: "business-parks",
-    title: "Business Parks / Office Parks",
-    description: "Clusters of mid-rise office buildings",
-  },
-  {
-    id: "low-rise",
-    title: "Low-Rise / Single-Tenant Offices",
-    description: "Smaller office buildings for specific companies",
-  },
-  {
-    id: "co-working",
-    title: "Co-Working Spaces",
-    description: "Shared workspaces for freelancers and startups",
-  },
-  {
-    id: "call-centers",
-    title: "Call Centers",
-    description: "Offices designed for customer support services",
-  },
-  {
-    id: "government",
-    title: "Government & Municipal Offices",
-    description: "Administrative centers for public service",
-  },
-]
+interface CounterProps {
+  label: string
+  value: number
+  onChange: (value: number) => void
+}
 
-export default function OfficeTypePage() {
+function Counter({ label, value, onChange }: CounterProps) {
+  return (
+    <div className="flex flex-col space-y-2">
+      <label className="text-sm font-medium">{label}</label>
+      <div className="flex items-center">
+        <button
+          onClick={() => onChange(Math.max(0, value - 1))}
+          className="h-10 w-10 flex items-center justify-center rounded-lg border border-input hover:bg-accent"
+          disabled={value === 0}
+        >
+          <Minus className="h-4 w-4" />
+        </button>
+        <Input
+          type="number"
+          value={value}
+          onChange={(e) => onChange(Math.max(0, Number.parseInt(e.target.value) || 0))}
+          className="h-10 w-16 text-center mx-2"
+          min={0}
+        />
+        <button
+          onClick={() => onChange(value + 1)}
+          className="h-10 w-10 flex items-center justify-center rounded-lg border border-input hover:bg-accent"
+        >
+          <Plus className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
+  )
+}
+
+export default function PropertyUnitsPage() {
   const router = useRouter()
-  const [selectedType, setSelectedType] = React.useState<string | null>(null)
+  const { property, setPropertyDetails } = usePropertyStore()
+  const [details, setDetails] = React.useState(property.details)
+
+  const updateDetail = (key: keyof typeof details) => (value: number) => {
+    const newDetails = { ...details, [key]: value }
+    setDetails(newDetails)
+    setPropertyDetails(newDetails)
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -59,8 +67,8 @@ export default function OfficeTypePage() {
         <div className="flex items-center gap-2">
           <Button variant="outline">Save & Exit</Button>
           <Button
-            onClick={() => selectedType && router.push(`/dashboard/add-property/office/${selectedType}/title`)}
-            disabled={!selectedType}
+            onClick={() => router.push("/dashboard/add-property/office/location")}
+            className="bg-[#0082ed] hover:bg-[#0082ed]/90"
           >
             Next
           </Button>
@@ -68,7 +76,6 @@ export default function OfficeTypePage() {
       </div>
 
       <div className="max-w-3xl mx-auto p-6">
-        {/* Progress Steps */}
         <div className="mb-12">
           <div className="flex items-center">
             {[1, 2, 3, 4, 5].map((step, index) => (
@@ -82,28 +89,27 @@ export default function OfficeTypePage() {
               </React.Fragment>
             ))}
           </div>
-          <div className="mt-2 h-1 bg-[#0082ed] w-[20%]" />
+          <div className="mt-2 h-1 bg-[#0082ed] w-[60%]" />
         </div>
 
-        <div className="space-y-1 mb-8">
-          <h1 className="text-2xl font-semibold">What kind of office building do you have?</h1>
-        </div>
+        <div className="space-y-8">
+          <h1 className="text-2xl font-semibold">Add some details about your property</h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {officeTypes.map((type) => (
-            <button
-              key={type.id}
-              onClick={() => setSelectedType(type.id)}
-              className={`p-4 rounded-lg border text-left transition-colors ${
-                selectedType === type.id
-                  ? "border-[#0082ed] bg-[#0082ed]/5"
-                  : "border-border hover:border-[#0082ed] hover:bg-[#0082ed]/5"
-              }`}
-            >
-              <h3 className="font-medium mb-1">{type.title}</h3>
-              <p className="text-sm text-muted-foreground">{type.description}</p>
-            </button>
-          ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-6">
+            <div className="space-y-6">
+              <Counter label="Floors" value={details.floors} onChange={updateDetail("floors")} />
+              <Counter label="Units" value={details.units} onChange={updateDetail("units")} />
+              <Counter label="Offices Rooms" value={details.officeRooms} onChange={updateDetail("officeRooms")} />
+              <Counter label="Meeting Rooms" value={details.meetingRooms} onChange={updateDetail("meetingRooms")} />
+              <Counter label="Lobbies" value={details.lobbies} onChange={updateDetail("lobbies")} />
+            </div>
+            <div className="space-y-6">
+              <Counter label="Restrooms" value={details.restrooms} onChange={updateDetail("restrooms")} />
+              <Counter label="Break Rooms" value={details.breakRooms} onChange={updateDetail("breakRooms")} />
+              <Counter label="Cafeteria" value={details.cafeteria} onChange={updateDetail("cafeteria")} />
+              <Counter label="Gym" value={details.gym} onChange={updateDetail("gym")} />
+            </div>
+          </div>
         </div>
       </div>
     </div>

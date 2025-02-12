@@ -1,49 +1,57 @@
-"use client"
+"use client";
 
-import { useRouter } from "next/navigation"
-import * as React from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { ProgressSteps } from "@/components/progress-steps"
-import { MapPin } from "lucide-react"
+import { useRouter } from "next/navigation";
+import * as React from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ProgressSteps } from "@/components/progress-steps";
+import { MapPin } from "lucide-react";
+import { usePropertyStore } from "@/store/property-store";
 
-// Define types for Google Maps
 declare global {
   interface Window {
-    google: typeof google
-    initMap: () => void
+    google: typeof google;
   }
 }
 
 export default function PropertyLocationPage() {
-  const router = useRouter()
-  const [search, setSearch] = React.useState("")
-  const [suggestions, setSuggestions] = React.useState<google.maps.places.AutocompletePrediction[]>([])
-  const [showSuggestions, setShowSuggestions] = React.useState(false)
-  const [map, setMap] = React.useState<google.maps.Map | null>(null)
-  const [marker, setMarker] = React.useState<google.maps.Marker | null>(null)
-  const mapRef = React.useRef<HTMLDivElement>(null)
-  const autocompleteService = React.useRef<google.maps.places.AutocompleteService | null>(null)
-  const placesService = React.useRef<google.maps.places.PlacesService | null>(null)
+  const router = useRouter();
+  const { property, setPropertyLocation } = usePropertyStore();
+  const [search, setSearch] = React.useState(property.location);
+  const [suggestions, setSuggestions] = React.useState<google.maps.places.AutocompletePrediction[]>([]);
+  const [showSuggestions, setShowSuggestions] = React.useState(false);
+  const [map, setMap] = React.useState<google.maps.Map | null>(null);
+  const [marker, setMarker] = React.useState<google.maps.Marker | null>(null);
+  const mapRef = React.useRef<HTMLDivElement>(null);
+  const autocompleteService = React.useRef<google.maps.places.AutocompleteService | null>(null);
+  const placesService = React.useRef<google.maps.places.PlacesService | null>(null);
 
   React.useEffect(() => {
-    // Load Google Maps JavaScript API
-    const script = document.createElement("script")
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`
-    script.async = true
-    script.defer = true
-    script.onload = initMap
-    document.head.appendChild(script)
-
-    return () => {
-      document.head.removeChild(script)
+    if (typeof window !== "undefined" && window.google && window.google.maps) {
+      initMap();
+      return;
     }
-  }, [])
+
+    const existingScript = document.querySelector(
+      `script[src^="https://maps.googleapis.com/maps/api/js"]`
+    );
+
+    if (!existingScript) {
+      const script = document.createElement("script");
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
+      script.async = true;
+      script.defer = true;
+      script.onload = initMap;
+      document.head.appendChild(script);
+    } else {
+      existingScript.addEventListener("load", initMap);
+    }
+  }, []);
 
   const initMap = () => {
-    if (!mapRef.current) return
+    if (!mapRef.current || typeof window === "undefined" || !window.google) return;
 
-    const defaultLocation = { lat: 40.7128, lng: -74.006 } // New York City
+    const defaultLocation = { lat: 40.7128, lng: -74.006 };
     const newMap = new window.google.maps.Map(mapRef.current, {
       center: defaultLocation,
       zoom: 13,
@@ -54,73 +62,68 @@ export default function PropertyLocationPage() {
           stylers: [{ visibility: "off" }],
         },
       ],
-    })
+    });
 
     const newMarker = new window.google.maps.Marker({
       map: newMap,
       position: defaultLocation,
       draggable: true,
-    })
+    });
 
-    setMap(newMap)
-    setMarker(newMarker)
-    autocompleteService.current = new window.google.maps.places.AutocompleteService()
-    placesService.current = new window.google.maps.places.PlacesService(newMap)
-  }
+    setMap(newMap);
+    setMarker(newMarker);
+    autocompleteService.current = new window.google.maps.places.AutocompleteService();
+    placesService.current = new window.google.maps.places.PlacesService(newMap);
+  };
 
   const handleSearchChange = async (value: string) => {
-    setSearch(value)
-    setShowSuggestions(!!value.trim())
+    setSearch(value);
+    setShowSuggestions(!!value.trim());
 
     if (value.trim() && autocompleteService.current) {
       try {
         const response = await new Promise<google.maps.places.AutocompletePrediction[]>((resolve, reject) => {
           autocompleteService.current?.getPlacePredictions(
-            {
-              input: value,
-              types: ["address"],
-            },
+            { input: value, types: ["address"] },
             (predictions, status) => {
               if (status === window.google.maps.places.PlacesServiceStatus.OK && predictions) {
-                resolve(predictions)
+                resolve(predictions);
               } else {
-                reject(status)
+                reject(status);
               }
-            },
-          )
-        })
-        setSuggestions(response)
+            }
+          );
+        });
+        setSuggestions(response);
       } catch (error) {
-        console.error("Error fetching suggestions:", error)
-        setSuggestions([])
+        console.error("Error fetching suggestions:", error);
+        setSuggestions([]);
       }
     } else {
-      setSuggestions([])
+      setSuggestions([]);
     }
-  }
+  };
 
   const handlePlaceSelect = (prediction: google.maps.places.AutocompletePrediction) => {
-    if (!placesService.current) return
+    if (!placesService.current) return;
 
     placesService.current.getDetails(
-      {
-        placeId: prediction.place_id,
-        fields: ["geometry", "formatted_address"],
-      },
+      { placeId: prediction.place_id, fields: ["geometry", "formatted_address"] },
       (place, status) => {
         if (status === window.google.maps.places.PlacesServiceStatus.OK && place?.geometry?.location) {
-          setSearch(prediction.description)
-          setShowSuggestions(false)
+          setSearch(prediction.description);
+          setPropertyLocation(prediction.description);
+          setShowSuggestions(false);
 
           if (map && marker) {
-            map.setCenter(place.geometry.location)
-            map.setZoom(17)
-            marker.setPosition(place.geometry.location)
+            map.setCenter(place.geometry.location);
+            map.setZoom(17);
+            marker.setPosition(place.geometry.location);
           }
         }
-      },
-    )
-  }
+      }
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -184,6 +187,5 @@ export default function PropertyLocationPage() {
         <ProgressSteps currentStep={4} />
       </div>
     </div>
-  )
+  );
 }
-

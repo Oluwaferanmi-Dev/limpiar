@@ -5,18 +5,17 @@ import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 import Image from "next/image"
-
-interface UploadedImage {
-  id: string
-  url: string
-  file: File
-}
+import { usePropertyStore } from "@/store/property-store"
+import type { PropertyImage } from "@/store/property-store"
 
 export default function PropertyImagesPage() {
   const router = useRouter()
-  const [images, setImages] = React.useState<UploadedImage[]>([])
+  const { property, setPropertyImages } = usePropertyStore()
+  const [images, setImages] = React.useState<PropertyImage[]>(property.images)
   const [isDragging, setIsDragging] = React.useState(false)
-  const [coverPhotoId, setCoverPhotoId] = React.useState<string | null>(null)
+  const [coverPhotoId, setCoverPhotoId] = React.useState<string | null>(
+    property.images.length > 0 ? property.images[0].id : null,
+  )
   const fileInputRef = React.useRef<HTMLInputElement>(null)
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -51,24 +50,33 @@ export default function PropertyImagesPage() {
       file,
     }))
 
-    setImages((prev) => {
-      const combined = [...prev, ...newImages]
-      if (!coverPhotoId && combined.length > 0) {
-        setCoverPhotoId(combined[0].id)
-      }
-      return combined
-    })
+    const updatedImages = [...images, ...newImages]
+    setImages(updatedImages)
+    setPropertyImages(updatedImages)
+
+    if (!coverPhotoId && updatedImages.length > 0) {
+      setCoverPhotoId(updatedImages[0].id)
+    }
   }
 
   const removeImage = (id: string) => {
-    setImages((prev) => prev.filter((img) => img.id !== id))
+    const updatedImages = images.filter((img) => img.id !== id)
+    setImages(updatedImages)
+    setPropertyImages(updatedImages)
+
     if (coverPhotoId === id) {
-      setCoverPhotoId(images[0]?.id || null)
+      setCoverPhotoId(updatedImages[0]?.id || null)
     }
   }
 
   const setCoverPhoto = (id: string) => {
     setCoverPhotoId(id)
+    const selectedImage = images.find((img) => img.id === id)
+    if (selectedImage) {
+      const updatedImages = [selectedImage, ...images.filter((img) => img.id !== id)]
+      setImages(updatedImages)
+      setPropertyImages(updatedImages)
+    }
   }
 
   return (
@@ -90,7 +98,6 @@ export default function PropertyImagesPage() {
       </div>
 
       <div className="max-w-3xl mx-auto p-6">
-        {/* Progress Steps */}
         <div className="mb-12">
           <div className="flex items-center">
             {[1, 2, 3, 4, 5].map((step, index) => (
@@ -205,7 +212,10 @@ export default function PropertyImagesPage() {
               <Button variant="outline" onClick={() => router.back()}>
                 Back
               </Button>
-              <Button onClick={() => router.push("/dashboard/add-property/office/preview")} disabled={images.length < 5}>
+              <Button
+                onClick={() => router.push("/dashboard/add-property/office/preview")}
+                disabled={images.length < 5}
+              >
                 Next
               </Button>
             </div>
@@ -215,4 +225,3 @@ export default function PropertyImagesPage() {
     </div>
   )
 }
-

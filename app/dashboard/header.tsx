@@ -1,5 +1,4 @@
 import { Bell, ChevronDown } from "lucide-react"
-import Image from "next/image"
 
 export function Header() {
   return (
@@ -12,12 +11,7 @@ export function Header() {
           </span>
         </button>
         <button className="flex items-center gap-2">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-gray-200 overflow-hidden">
-              <Image src="/placeholder.svg?height=32&width=32" alt="Profile" width={32} height={32} />
-            </div>
-            <span className="text-sm font-medium">William Scott</span>
-          </div>
+          <span className="text-sm font-medium">William Scott</span>
           <ChevronDown className="w-4 h-4 text-gray-600" />
         </button>
       </div>

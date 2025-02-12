@@ -4,11 +4,19 @@ import { useRouter } from "next/navigation"
 import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { usePropertyStore } from "@/store/property-store"
 
 export default function PropertyTitlePage() {
   const router = useRouter()
-  const [title, setTitle] = React.useState("")
+  const { property, setPropertyName } = usePropertyStore()
+  const [title, setTitle] = React.useState(property.name)
   const maxLength = 40
+
+  const handleTitleChange = (value: string) => {
+    const newValue = value.slice(0, maxLength)
+    setTitle(newValue)
+    setPropertyName(newValue)
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -29,7 +37,6 @@ export default function PropertyTitlePage() {
       </div>
 
       <div className="max-w-3xl mx-auto p-6">
-        {/* Progress Steps */}
         <div className="mb-12">
           <div className="flex items-center">
             {[1, 2, 3, 4, 5].map((step, index) => (
@@ -55,7 +62,7 @@ export default function PropertyTitlePage() {
             <Input
               placeholder="Property title"
               value={title}
-              onChange={(e) => setTitle(e.target.value.slice(0, maxLength))}
+              onChange={(e) => handleTitleChange(e.target.value)}
               className="pr-16"
             />
             <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">

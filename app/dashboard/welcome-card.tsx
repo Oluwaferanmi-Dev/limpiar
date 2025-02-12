@@ -13,9 +13,9 @@ export function WelcomeCard() {
           </Button>
         </Link>
       </div>
-      <div className="absolute right-0 bottom-0 w-[300px]">
+      <div className="absolute right-0 bottom-0 w-[250px]">
         <img
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-DB1NwsUwEqUebS4gJDF4SPXkDeMx2a.png"
+          src="building.png"
           alt="Building"
           className="object-contain"
         />

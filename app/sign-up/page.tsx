@@ -40,7 +40,7 @@ export default function SignUpPage() {
     e.preventDefault()
     setIsLoading(true)
     await new Promise((resolve) => setTimeout(resolve, 1000))
-    router.push("/verify")
+    router.push("/dashboard")
   }
 
   return (

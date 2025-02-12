@@ -1,24 +1,13 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import * as React from "react"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { MapPin } from "lucide-react"
+import Image from "next/image"
 
-interface PropertyImage {
-  id: string
-  url: string
-}
-
-interface PropertyDetails {
+interface Property {
   name: string
   location: string
-  owner: {
-    name: string
-    avatar: string
-    role: string
-  }
   details: {
     floors: number
     units: number
@@ -27,120 +16,65 @@ interface PropertyDetails {
     lobbies: number
     restrooms: number
     breakRooms: number
-    cafeteria: number
-    gym: number
+    cafeteria: boolean
+    gym: boolean
   }
-  images: PropertyImage[]
 }
 
-// This would typically come from your backend/state management
-const propertyData: PropertyDetails = {
-  name: "Azure Haven",
-  location: "Queens Center NY, USA",
-  owner: {
-    name: "Darren Smith",
-    avatar: "/placeholder.svg?height=40&width=40",
-    role: "Property Owner",
-  },
-  details: {
-    floors: 10,
-    units: 30,
-    officeRooms: 50,
-    meetingRooms: 10,
-    lobbies: 20,
-    restrooms: 40,
-    breakRooms: 3,
-    cafeteria: 2,
-    gym: 1,
-  },
-  images: [
-    {
-      id: "1",
-      url: "/logo.png",
-    },
-    {
-      id: "2",
-      url: "/logo.png",
-    },
-    {
-      id: "3",
-      url: "/logo.png",
-    },
-  ],
-}
-
-export default function PropertyPreviewPage() {
+export default function Page({ params }: { params: { id: string } }) {
   const router = useRouter()
-  const [selectedImage, setSelectedImage] = React.useState(propertyData.images[0])
+
+  const property: Property = {
+    name: "Acme Corporation Headquarters",
+    location: "123 Main Street, Anytown, CA 91234",
+    details: {
+      floors: 10,
+      units: 50,
+      officeRooms: 200,
+      meetingRooms: 10,
+      lobbies: 2,
+      restrooms: 50,
+      breakRooms: 5,
+      cafeteria: true,
+      gym: true,
+    },
+  }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="flex items-center justify-between p-4 border-b">
-        <div className="flex items-center gap-2">
-          <button onClick={() => router.back()} className="text-muted-foreground hover:text-foreground">
-            Back
-          </button>
-          <span className="text-muted-foreground">/</span>
-          <span>Preview Property</span>
-        </div>
-        <Button variant="outline" onClick={() => router.push("/dashboard")}>
-          Exit preview
-        </Button>
-      </div>
-
-      <div className="max-w-5xl mx-auto p-6">
-        <div className="space-y-6">
-          {/* Main Image */}
-          <div className="relative aspect-[16/9] rounded-lg overflow-hidden">
-            <Image
-              src={selectedImage.url || "/placeholder.svg"}
-              alt={propertyData.name}
-              fill
-              className="object-cover"
-            />
-          </div>
-
-          {/* Thumbnail Images */}
-          <div className="flex gap-4">
-            {propertyData.images.map((image) => (
-              <button
-                key={image.id}
-                onClick={() => setSelectedImage(image)}
-                className={`relative aspect-[4/3] w-32 rounded-lg overflow-hidden ${
-                  selectedImage.id === image.id ? "ring-2 ring-[#0082ed]" : ""
-                }`}
-              >
-                <Image src={image.url || "/placeholder.svg"} alt={propertyData.name} fill className="object-cover" />
-              </button>
-            ))}
-            <button className="flex items-center justify-center w-32 aspect-[4/3] bg-muted rounded-lg text-sm text-muted-foreground hover:bg-muted/80">
-              Show all photos
+    <div className="flex h-full w-full flex-col overflow-hidden bg-white">
+      <div className="flex h-[500px] w-full items-center justify-center bg-[url('/property-image.jpg')] bg-cover">
+        <div className="relative flex h-[300px] w-[600px] flex-col items-center justify-center rounded-lg bg-white/50 p-4 backdrop-blur-lg">
+          <div className="flex items-center gap-4">
+            <button className="flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-10.707l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 011.414-1.414L9 10.586l2.293-2.293a1 1 0 111.414 1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              Back
             </button>
           </div>
 
           {/* Property Info */}
           <div className="space-y-6">
             <div>
-              <h1 className="text-2xl font-semibold mb-2">{propertyData.name}</h1>
+              <h1 className="text-2xl font-semibold mb-2">{property.name}</h1>
               <div className="flex items-center text-muted-foreground">
                 <MapPin className="h-4 w-4 mr-1" />
-                {propertyData.location}
+                {property.location}
               </div>
             </div>
 
             {/* Owner Info */}
             <div className="flex items-center gap-3 p-4 border rounded-lg">
               <div className="relative w-10 h-10 rounded-full overflow-hidden">
-                <Image
-                  src={propertyData.owner.avatar || "/placeholder.svg"}
-                  alt={propertyData.owner.name}
-                  fill
-                  className="object-cover"
-                />
+                <Image src="/placeholder.svg?height=40&width=40" alt="Property Owner" fill className="object-cover" />
               </div>
               <div>
-                <div className="font-medium">{propertyData.owner.name}</div>
-                <div className="text-sm text-muted-foreground">{propertyData.owner.role}</div>
+                <div className="font-medium">Darren Smith</div>
+                <div className="text-sm text-muted-foreground">Property Owner</div>
               </div>
             </div>
 
@@ -150,39 +84,39 @@ export default function PropertyPreviewPage() {
               <div className="grid grid-cols-2 gap-y-4">
                 <div className="flex justify-between pr-8">
                   <span className="text-muted-foreground">Floors</span>
-                  <span className="font-medium">{propertyData.details.floors}</span>
+                  <span className="font-medium">{property.details.floors}</span>
                 </div>
                 <div className="flex justify-between pr-8">
                   <span className="text-muted-foreground">Units</span>
-                  <span className="font-medium">{propertyData.details.units}</span>
+                  <span className="font-medium">{property.details.units}</span>
                 </div>
                 <div className="flex justify-between pr-8">
                   <span className="text-muted-foreground">Offices Rooms</span>
-                  <span className="font-medium">{propertyData.details.officeRooms}</span>
+                  <span className="font-medium">{property.details.officeRooms}</span>
                 </div>
                 <div className="flex justify-between pr-8">
                   <span className="text-muted-foreground">Meeting Rooms</span>
-                  <span className="font-medium">{propertyData.details.meetingRooms}</span>
+                  <span className="font-medium">{property.details.meetingRooms}</span>
                 </div>
                 <div className="flex justify-between pr-8">
                   <span className="text-muted-foreground">Lobbies</span>
-                  <span className="font-medium">{propertyData.details.lobbies}</span>
+                  <span className="font-medium">{property.details.lobbies}</span>
                 </div>
                 <div className="flex justify-between pr-8">
                   <span className="text-muted-foreground">Restrooms</span>
-                  <span className="font-medium">{propertyData.details.restrooms}</span>
+                  <span className="font-medium">{property.details.restrooms}</span>
                 </div>
                 <div className="flex justify-between pr-8">
                   <span className="text-muted-foreground">Break Rooms</span>
-                  <span className="font-medium">{propertyData.details.breakRooms}</span>
+                  <span className="font-medium">{property.details.breakRooms}</span>
                 </div>
                 <div className="flex justify-between pr-8">
                   <span className="text-muted-foreground">Cafeteria</span>
-                  <span className="font-medium">{propertyData.details.cafeteria}</span>
+                  <span className="font-medium">{property.details.cafeteria}</span>
                 </div>
                 <div className="flex justify-between pr-8">
                   <span className="text-muted-foreground">Gym</span>
-                  <span className="font-medium">{propertyData.details.gym}</span>
+                  <span className="font-medium">{property.details.gym}</span>
                 </div>
               </div>
             </div>
