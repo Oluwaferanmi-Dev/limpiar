@@ -22,11 +22,7 @@ export default function PropertyTitlePage() {
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline">Save & Exit</Button>
-          <Button
-            onClick={() => router.push("/dashboard/add-property/office/units")}
-            disabled={!title.trim()}
-            className="bg-[#0082ed] hover:bg-[#0082ed]/90"
-          >
+          <Button onClick={() => router.push("/dashboard/add-property/office/units")} disabled={!title.trim()}>
             Next
           </Button>
         </div>
@@ -50,20 +46,20 @@ export default function PropertyTitlePage() {
           <div className="mt-2 h-1 bg-[#0082ed] w-[40%]" />
         </div>
 
-        <div className="flex flex-col items-center">
-          <div className="w-full max-w-md space-y-8">
-            <h1 className="text-2xl font-semibold text-center">Give a name to your property</h1>
+        <div className="space-y-1 mb-8">
+          <h1 className="text-2xl font-semibold">Give a name to your property</h1>
+        </div>
 
-            <div className="relative">
-              <Input
-                placeholder="Property title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value.slice(0, maxLength))}
-                className="h-12 px-4 text-base"
-              />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                {title.length}/{maxLength}
-              </div>
+        <div className="max-w-md">
+          <div className="relative">
+            <Input
+              placeholder="Property title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value.slice(0, maxLength))}
+              className="pr-16"
+            />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+              {title.length}/{maxLength}
             </div>
           </div>
         </div>
