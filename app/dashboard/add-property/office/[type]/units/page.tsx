@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation"
 import * as React from "react"
 import { Button } from "@/components/ui/button"
-import { ProgressSteps } from "@/components/progress-steps"
 import { Input } from "@/components/ui/input"
 import { Minus, Plus } from "lucide-react"
 
@@ -15,25 +14,28 @@ interface CounterProps {
 
 function Counter({ label, value, onChange }: CounterProps) {
   return (
-    <div className="flex items-center justify-between py-2">
-      <span className="text-sm font-medium">{label}</span>
-      <div className="flex items-center gap-2">
+    <div className="flex flex-col space-y-2">
+      <label className="text-sm font-medium">{label}</label>
+      <div className="flex items-center">
         <button
           onClick={() => onChange(Math.max(0, value - 1))}
-          className="p-1 rounded-md hover:bg-muted"
+          className="h-10 w-10 flex items-center justify-center rounded-lg border border-input hover:bg-accent"
           disabled={value === 0}
         >
-          <Minus className="w-4 h-4" />
+          <Minus className="h-4 w-4" />
         </button>
         <Input
           type="number"
           value={value}
           onChange={(e) => onChange(Math.max(0, Number.parseInt(e.target.value) || 0))}
-          className="w-16 text-center"
+          className="h-10 w-16 text-center mx-2"
           min={0}
         />
-        <button onClick={() => onChange(value + 1)} className="p-1 rounded-md hover:bg-muted">
-          <Plus className="w-4 h-4" />
+        <button
+          onClick={() => onChange(value + 1)}
+          className="h-10 w-10 flex items-center justify-center rounded-lg border border-input hover:bg-accent"
+        >
+          <Plus className="h-4 w-4" />
         </button>
       </div>
     </div>
@@ -70,28 +72,52 @@ export default function PropertyUnitsPage() {
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline">Save & Exit</Button>
-          <Button onClick={() => router.push("/dashboard/add-property/office/location")}>Next</Button>
+          <Button
+            onClick={() => router.push("/dashboard/add-property/office/location")}
+            className="bg-[#0082ed] hover:bg-[#0082ed]/90"
+          >
+            Next
+          </Button>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto p-6">
-        <div className="space-y-1 mb-8">
+      <div className="max-w-3xl mx-auto p-6">
+        {/* Progress Steps */}
+        <div className="mb-12">
+          <div className="flex items-center">
+            {[1, 2, 3, 4, 5].map((step, index) => (
+              <React.Fragment key={step}>
+                <div className="flex items-center">
+                  <div className="text-sm text-muted-foreground">
+                    {step}. {["Category", "Title", "Units", "Location", "Image"][index]}
+                  </div>
+                </div>
+                {index < 4 && <div className="flex-1 h-[1px] bg-border mx-2" />}
+              </React.Fragment>
+            ))}
+          </div>
+          <div className="mt-2 h-1 bg-[#0082ed] w-[60%]" />
+        </div>
+
+        <div className="space-y-8">
           <h1 className="text-2xl font-semibold">Add some details about your property</h1>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 mb-8">
-          <Counter label="Floors" value={details.floors} onChange={updateDetail("floors")} />
-          <Counter label="Restrooms" value={details.restrooms} onChange={updateDetail("restrooms")} />
-          <Counter label="Units" value={details.units} onChange={updateDetail("units")} />
-          <Counter label="Break Rooms" value={details.breakRooms} onChange={updateDetail("breakRooms")} />
-          <Counter label="Office Rooms" value={details.officeRooms} onChange={updateDetail("officeRooms")} />
-          <Counter label="Cafeteria" value={details.cafeteria} onChange={updateDetail("cafeteria")} />
-          <Counter label="Meeting Rooms" value={details.meetingRooms} onChange={updateDetail("meetingRooms")} />
-          <Counter label="Gym" value={details.gym} onChange={updateDetail("gym")} />
-          <Counter label="Lobbies" value={details.lobbies} onChange={updateDetail("lobbies")} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-6">
+            <div className="space-y-6">
+              <Counter label="Floors" value={details.floors} onChange={updateDetail("floors")} />
+              <Counter label="Units" value={details.units} onChange={updateDetail("units")} />
+              <Counter label="Offices Rooms" value={details.officeRooms} onChange={updateDetail("officeRooms")} />
+              <Counter label="Meeting Rooms" value={details.meetingRooms} onChange={updateDetail("meetingRooms")} />
+              <Counter label="Lobbies" value={details.lobbies} onChange={updateDetail("lobbies")} />
+            </div>
+            <div className="space-y-6">
+              <Counter label="Restrooms" value={details.restrooms} onChange={updateDetail("restrooms")} />
+              <Counter label="Break Rooms" value={details.breakRooms} onChange={updateDetail("breakRooms")} />
+              <Counter label="Cafeteria" value={details.cafeteria} onChange={updateDetail("cafeteria")} />
+              <Counter label="Gym" value={details.gym} onChange={updateDetail("gym")} />
+            </div>
+          </div>
         </div>
-
-        <ProgressSteps currentStep={3} />
       </div>
     </div>
   )
