@@ -83,7 +83,7 @@ export default function PropertyImagesPage() {
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline">Preview</Button>
-          <Button onClick={() => router.push("/dashboard")} disabled={images.length < 5}>
+          <Button onClick={() => router.push("/dashboard/add-property/office/preview")} disabled={images.length < 5}>
             Publish
           </Button>
         </div>
@@ -205,7 +205,7 @@ export default function PropertyImagesPage() {
               <Button variant="outline" onClick={() => router.back()}>
                 Back
               </Button>
-              <Button onClick={() => router.push("/dashboard")} disabled={images.length < 5}>
+              <Button onClick={() => router.push("/dashboard/add-property/office/preview")} disabled={images.length < 5}>
                 Next
               </Button>
             </div>
